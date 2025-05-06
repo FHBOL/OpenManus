@@ -272,6 +272,7 @@ class PlanningFlow(BaseFlow):
 
         Please execute this step using the appropriate tools. When you're done, provide a summary of what you accomplished.
         """
+        print(f"Step prompt: {step_prompt}")
 
         # Use agent.run() to execute the step
         try:
