@@ -209,6 +209,31 @@ await self.planning_tool.execute(
 [ ] 设计并实现一个HTML页面用于展示教学内容
 ```
 []指定agent，没有则使用第一个agent。
+### 3. 与 Agent 的交互
+
+`PlanningFlow` 通过以下方式与 Agent 交互：
+
+```python
+async def _execute_step(self, executor: BaseAgent, step_info: dict) -> str:
+    # 准备上下文
+    plan_status = await self._get_plan_text()
+    step_text = step_info.get("text", f"Step {self.current_step_index}")
+
+    # 创建提示
+    step_prompt = f"""
+    CURRENT PLAN STATUS:
+    {plan_status}
+
+    YOUR CURRENT TASK:
+    You are now working on step {self.current_step_index}: "{step_text}"
+
+    Please execute this step using the appropriate tools.
+    """
+
+    # 使用 agent.run() 执行步骤
+    step_result = await executor.run(step_prompt)
+    return step_result
+```
 
 ### Step 1 agnet prompt:
 
@@ -238,31 +263,6 @@ Steps:
 ```
 
 
-### 3. 与 Agent 的交互
-
-`PlanningFlow` 通过以下方式与 Agent 交互：
-
-```python
-async def _execute_step(self, executor: BaseAgent, step_info: dict) -> str:
-    # 准备上下文
-    plan_status = await self._get_plan_text()
-    step_text = step_info.get("text", f"Step {self.current_step_index}")
-
-    # 创建提示
-    step_prompt = f"""
-    CURRENT PLAN STATUS:
-    {plan_status}
-
-    YOUR CURRENT TASK:
-    You are now working on step {self.current_step_index}: "{step_text}"
-
-    Please execute this step using the appropriate tools.
-    """
-
-    # 使用 agent.run() 执行步骤
-    step_result = await executor.run(step_prompt)
-    return step_result
-```
 
 ## 与传统 Agent 模式的比较
 
